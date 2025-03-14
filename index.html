@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>元智大學 實驗室小助手</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f4f6f9;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    #questionInput {
+      width: 60%;
+      padding: 12px;
+      margin-right: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #answerBox {
+      margin: 30px auto;
+      padding: 20px;
+      width: 70%;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      min-height: 150px;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>元智大學 實驗室小助手</h1>
+
+  <input type="text" id="questionInput" placeholder="請輸入你的問題..." />
+  <button onclick="sendQuestion()">送出問題</button>
+
+  <h2>小幫手 回答：</h2>
+  <div id="answerBox">請輸入問題並按下送出。</div>
+
+  <script>
+    async function sendQuestion() {
+      const question = document.getElementById('questionInput').value;
+      const answerBox = document.getElementById('answerBox');
+      const sessionId = "user-1234";
+
+      answerBox.innerHTML = "AI 正在思考中，請稍候...";
+
+      try {
+        const response = await fetch('/api/webhook/ask-ai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sessionId: sessionId,
+            question: question
+          })
+        });
+
+        const answer = await response.text(); // 回純文字
+        answerBox.innerHTML = answer.replace(/\n/g, '<br>'); // 換行成段落
+
+      } catch (error) {
+        console.error('錯誤:', error);
+        answerBox.innerHTML = "⚠️ 發生錯誤，請稍後再試。";
+      }
+    }
+  </script>
+</body>
+</html>
